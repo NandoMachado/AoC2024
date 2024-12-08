@@ -3,67 +3,41 @@ def readFile() -> list[str]:
         return f.readlines()
 
 
-def createArray(line: str):
-    return [int(item) for item in line.split()]
+def createDistancesArray(line: str) -> list[int]:
+    items = [int(x) for x in line.split()]
+    return [a - b for a, b in zip(items[0 : len(items) - 1], items[1 : len(items)])]
 
 
-def isSafe(a: int, b: int, isIncreasing: bool) -> bool:
-    isInValidOrder = (isIncreasing and a < b) or (not isIncreasing and a > b)
-    isValidDistance = 1 <= max(a, b) - min(a, b) <= 3
+def isSafe_partOne(record: list[int]) -> bool:
+    return all(3 >= x >= 1 for x in record) or all(-3 <= x <= -1 for x in record)
 
-    return isInValidOrder and isValidDistance
+
+def isSafe_partTwo(record: list[int]) -> bool:
+    invalidValues = 0
+    isIncreasing = record[0] < 0
+
+    for value in record:
+        if (isIncreasing and value not in [-3, -2, -1]) or (
+            not isIncreasing and value not in [1, 2, 3]
+        ):
+            invalidValues += 1
+
+    return invalidValues <= 1
 
 
 if __name__ == "__main__":
     lines = readFile()
-    safeLinesCount = 0
 
-    # part 1
-    for line in lines:
-        lineArr = createArray(line)
-        if lineArr[0] == lineArr[1]:
-            continue
-
-        isIncreasing = lineArr[0] < lineArr[1]
-        isSafeLine = True
-
-        for i in range(len(lineArr) - 1):
-            if isSafe(lineArr[i], lineArr[i + 1], isIncreasing):
-                continue
-            else:
-                isSafeLine = False
-                break
-
-        if isSafeLine:
-            safeLinesCount += 1
-
-    print(safeLinesCount)
-
-    # part 2
-    safeLinesCount = 0
+    safeRecords_partOne = 0
+    safeRecords_partTwo = 0
 
     for line in lines:
-        lineArr = createArray(line)
-        problemDampenerCount = 0
+        record = createDistancesArray(line)
 
-        isIncreasing = lineArr[0] < lineArr[1]
-        isSafeLine = True
+        if isSafe_partOne(record):
+            safeRecords_partOne += 1
 
-        i = 0
+        elif isSafe_partTwo(record):
+            safeRecords_partTwo += 1
 
-        while i < (len(lineArr) - 1):
-            if isSafe(lineArr[i], lineArr[i + 1], isIncreasing):
-                i += 1
-                continue
-            elif problemDampenerCount == 0:
-                problemDampenerCount += 1
-                lineArr.pop(i + 1)
-                continue
-            else:
-                isSafeLine = False
-                break
-
-        if isSafeLine:
-            safeLinesCount += 1
-
-    print(safeLinesCount)
+    print(safeRecords_partOne, safeRecords_partTwo + safeRecords_partOne)
