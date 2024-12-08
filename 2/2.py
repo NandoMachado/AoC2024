@@ -4,25 +4,33 @@ def readFile() -> list[str]:
 
 
 def createDistancesArray(line: str) -> list[int]:
-    items = [int(x) for x in line.split()]
-    return [a - b for a, b in zip(items[0 : len(items) - 1], items[1 : len(items)])]
+    return [int(x) for x in line.split()]
 
 
 def isSafe_partOne(record: list[int]) -> bool:
-    return all(3 >= x >= 1 for x in record) or all(-3 <= x <= -1 for x in record)
+    isIncreasing = record[1] - record[0] > 0
+
+    if isIncreasing:
+        for i in range(1, len(record)):
+            diff = record[i] - record[i - 1]
+            if not 1 <= diff <= 3:
+                return False
+        return True
+
+    else:
+        for i in range(1, len(record)):
+            diff = record[i] - record[i - 1]
+            if not -3 <= diff <= -1:
+                return False
+        return True
 
 
+# CHEATED - stolen from here: https://www.youtube.com/watch?v=4NICD495QFE
 def isSafe_partTwo(record: list[int]) -> bool:
-    invalidValues = 0
-    isIncreasing = record[0] < 0
-
-    for value in record:
-        if (isIncreasing and value not in [-3, -2, -1]) or (
-            not isIncreasing and value not in [1, 2, 3]
-        ):
-            invalidValues += 1
-
-    return invalidValues <= 1
+    for i in range(len(record)):
+        if isSafe_partOne(record[:i] + record[i + 1 :]):
+            return True
+    return False
 
 
 if __name__ == "__main__":
