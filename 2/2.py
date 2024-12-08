@@ -18,6 +18,7 @@ if __name__ == "__main__":
     lines = readFile()
     safeLinesCount = 0
 
+    # part 1
     for line in lines:
         lineArr = createArray(line)
         if lineArr[0] == lineArr[1]:
@@ -38,4 +39,31 @@ if __name__ == "__main__":
 
     print(safeLinesCount)
 
-#  383
+    # part 2
+    safeLinesCount = 0
+
+    for line in lines:
+        lineArr = createArray(line)
+        problemDampenerCount = 0
+
+        isIncreasing = lineArr[0] < lineArr[1]
+        isSafeLine = True
+
+        i = 0
+
+        while i < (len(lineArr) - 1):
+            if isSafe(lineArr[i], lineArr[i + 1], isIncreasing):
+                i += 1
+                continue
+            elif problemDampenerCount == 0:
+                problemDampenerCount += 1
+                lineArr.pop(i + 1)
+                continue
+            else:
+                isSafeLine = False
+                break
+
+        if isSafeLine:
+            safeLinesCount += 1
+
+    print(safeLinesCount)
